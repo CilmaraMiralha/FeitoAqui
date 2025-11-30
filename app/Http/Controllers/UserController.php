@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Rules\NotGenericStoreName;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,7 @@ class UserController extends Controller
         }
 
         $users = User::all();
-        return view('users', ['users' => $users]);
+        return view('users.index', ['users' => $users]);
     }
 
     public function create(): View
@@ -35,13 +36,18 @@ class UserController extends Controller
             'birthDate' => 'required|date',
             'password' => 'required|string|min:8|confirmed',
             'socialMedia' => 'nullable|string|max:255',
+            'is_seller' => 'nullable|boolean',
+            'store_name' => ['nullable', 'string', 'max:255', 'required_if:is_seller,true', new NotGenericStoreName()],
+            'cnpj' => 'nullable|string|max:18',
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
 
-        return redirect()->route('users.show')->with('success', 'Usuário cadastrado com sucesso!');
+        Auth::login($user);
+
+        return redirect()->route('users.edit', $user)->with('success', 'Usuário cadastrado com sucesso!');
     }
 
     public function edit(User $user): View
@@ -67,6 +73,9 @@ class UserController extends Controller
             'birthDate' => 'required|date',
             'socialMedia' => 'nullable|string|max:255',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_seller' => 'nullable|boolean',
+            'store_name' => ['nullable', 'string', 'max:255', 'required_if:is_seller,true', new NotGenericStoreName()],
+            'cnpj' => 'nullable|string|max:18',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -80,6 +89,6 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->back()->with('success', 'Perfil atualizado com sucesso!');
+        return redirect()->route('users.edit', $user)->with('success', 'Perfil atualizado com sucesso!');
     }
 }

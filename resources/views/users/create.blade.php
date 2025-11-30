@@ -7,6 +7,7 @@
     @vite('resources/css/app.css')
 </head>
 <body class="bg-[#F2F5EA] min-h-screen">
+    <x-header />
     @auth
     <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
         <div class="flex items-center gap-4">
@@ -150,6 +151,45 @@
                 @enderror
             </div>
 
+            <div class="border-t-2 border-gray-200 pt-6 mt-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Dados de Vendedor</h2>
+
+                <div class="mb-5">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="is_seller" name="is_seller" value="1"
+                            {{ old('is_seller') ? 'checked' : '' }}
+                            class="w-5 h-5 text-[#B2675E] border-gray-300 rounded focus:ring-[#B2675E]">
+                        <span class="ml-2 text-gray-700 font-bold">Sou um vendedor</span>
+                    </label>
+                </div>
+
+                <div id="seller_fields" style="display: {{ old('is_seller') ? 'block' : 'none' }};">
+                    <div class="mb-5">
+                        <label for="store_name" class="block mb-2 text-gray-700 font-bold">
+                            Nome da Loja <span class="text-red-600">*</span>
+                        </label>
+                        <input type="text" id="store_name" name="store_name" value="{{ old('store_name') }}"
+                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
+                            placeholder="Digite um nome único para sua loja">
+                        <div class="text-gray-600 text-xs mt-1">Evite nomes genéricos como "Loja de Receitas" ou "Receitas de Amigurumi"</div>
+                        @error('store_name')
+                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="cnpj" class="block mb-2 text-gray-700 font-bold">CNPJ</label>
+                        <input type="text" id="cnpj" name="cnpj" value="{{ old('cnpj') }}"
+                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
+                            placeholder="00.000.000/0000-00" maxlength="18">
+                        <div class="text-gray-600 text-xs mt-1">Formato: 00.000.000/0000-00 (opcional)</div>
+                        @error('cnpj')
+                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
             <div class="flex gap-3 mt-8">
                 <a href="{{ route('users.show') }}"
                     class="flex-1 text-center py-3 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition-colors">
@@ -172,6 +212,30 @@
                 value = value.replace(/(\d{3})(\d)/, '$1.$2');
                 value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
                 e.target.value = value;
+            }
+        });
+
+        // Máscara para CNPJ
+        document.getElementById('cnpj').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 14) {
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+
+        // Toggle para mostrar/ocultar campos de vendedor
+        document.getElementById('is_seller').addEventListener('change', function(e) {
+            const sellerFields = document.getElementById('seller_fields');
+            if (e.target.checked) {
+                sellerFields.style.display = 'block';
+            } else {
+                sellerFields.style.display = 'none';
+                document.getElementById('store_name').value = '';
+                document.getElementById('cnpj').value = '';
             }
         });
     </script>

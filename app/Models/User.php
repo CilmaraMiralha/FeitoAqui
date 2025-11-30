@@ -27,6 +27,9 @@ class User extends Authenticatable
         'socialMedia',
         'photo',
         'is_admin',
+        'is_seller',
+        'store_name',
+        'cnpj',
     ];
 
     /**
@@ -50,6 +53,22 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_seller' => 'boolean',
         ];
+    }
+
+    public function materials()
+    {
+        return $this->hasMany(Material::class);
+    }
+
+    public function drafts()
+    {
+        return $this->hasMany(Draft::class);
+    }
+
+    public function patterns()
+    {
+        return $this->hasMany(Pattern::class);
     }
 }
