@@ -1,207 +1,235 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Usuário</title>
+    <title>Cadastro de Usuário - FeitoAqui</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     @vite('resources/css/app.css')
+
+    <style>
+        :root {
+            --coffee: #644536;
+            --terracotta: #B2675E;
+            --ivory: #F2F5EA;
+            --dust: #D6DBD2;
+            --olive: #6F7C12;
+        }
+
+        body {
+            background-color: #FAFAF5;
+            color: var(--coffee);
+            line-height: 1.7;
+        }
+
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(178, 103, 94, 0.3);
+        }
+    </style>
 </head>
-<body class="bg-[#F2F5EA] min-h-screen">
+
+<body class="min-h-screen flex flex-col text-slate-600 antialiased">
     <x-header />
-    @auth
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-4">
-            @if(Auth::user()->photo)
-                <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover">
-            @else
-                <div class="w-10 h-10 rounded-full bg-[#B2675E] flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
-            @endif
-            <span class="font-semibold">Olá, {{ Auth::user()->name }}</span>
-        </div>
-        <div class="flex gap-4">
-            @if(Auth::user()->is_admin)
-                <a href="{{ route('users.show') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                    Lista de Usuários
-                </a>
-            @endif
-            <a href="{{ route('users.edit', Auth::user()) }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meu Perfil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-red-700 rounded hover:bg-red-800 transition-colors">
-                    Sair
-                </button>
-            </form>
-        </div>
-    </div>
-    @else
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <span class="font-bold text-lg">Sistema de Usuários</span>
-        <div class="flex gap-4">
-            <a href="{{ route('login') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Login
-            </a>
-            <a href="{{ route('users.create') }}" class="px-4 py-2 bg-[#B2675E] rounded hover:bg-[#9a5850] transition-colors">
-                Criar Conta
-            </a>
-        </div>
-    </div>
-    @endauth
 
-    <div class="p-5">
-        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Cadastro de Usuário</h1>
-
-        <form action="{{ route('users.store') }}" method="POST">
-            @csrf
-
-            <div class="mb-5">
-                <label for="name" class="block mb-2 text-gray-700 font-bold">
-                    Nome <span class="text-red-600">*</span>
-                </label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-                @error('name')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
+    <main class="flex-grow py-12 lg:py-20">
+        <div class="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
+            <div class="mb-10">
+                <h1 class="text-3xl lg:text-4xl font-serif font-bold text-[var(--coffee)] mb-3">Criar Conta</h1>
+                <p class="text-slate-500 font-light leading-relaxed">Junte-se à nossa comunidade criativa e comece sua jornada.</p>
             </div>
 
-            <div class="mb-5">
-                <label for="lastname" class="block mb-2 text-gray-700 font-bold">
-                    Sobrenome <span class="text-red-600">*</span>
-                </label>
-                <input type="text" id="lastname" name="lastname" value="{{ old('lastname') }}"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-                @error('lastname')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+            <div class="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-slate-100 p-8 lg:p-12">
+                <form action="{{ route('users.store') }}" method="POST">
+                    @csrf
 
-            <div class="mb-5">
-                <label for="cpf" class="block mb-2 text-gray-700 font-bold">
-                    CPF <span class="text-red-600">*</span>
-                </label>
-                <input type="text" id="cpf" name="cpf" value="{{ old('cpf') }}"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    placeholder="000.000.000-00" maxlength="14" required>
-                <div class="text-gray-600 text-xs mt-1">Formato: 000.000.000-00</div>
-                @error('cpf')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                    <!-- Informações Pessoais -->
+                    <div class="mb-10">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-6 pb-3 border-b border-slate-100">
+                            Informações Pessoais
+                        </h2>
 
-            <div class="mb-5">
-                <label for="email" class="block mb-2 text-gray-700 font-bold">
-                    Email <span class="text-red-600">*</span>
-                </label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-                @error('email')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Nome <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="text" id="name" name="name" value="{{ old('name') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    required>
+                                @error('name')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-            <div class="mb-5">
-                <label for="birthDate" class="block mb-2 text-gray-700 font-bold">
-                    Data de Nascimento <span class="text-red-600">*</span>
-                </label>
-                <input type="date" id="birthDate" name="birthDate" value="{{ old('birthDate') }}"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-                @error('birthDate')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                            <div>
+                                <label for="lastname" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Sobrenome <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="text" id="lastname" name="lastname" value="{{ old('lastname') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    required>
+                                @error('lastname')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-            <div class="mb-5">
-                <label for="password" class="block mb-2 text-gray-700 font-bold">
-                    Senha <span class="text-red-600">*</span>
-                </label>
-                <input type="password" id="password" name="password"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-                <div class="text-gray-600 text-xs mt-1">Mínimo de 8 caracteres</div>
-                @error('password')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                            <div>
+                                <label for="cpf" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    CPF <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="text" id="cpf" name="cpf" value="{{ old('cpf') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    placeholder="000.000.000-00" maxlength="14" required>
+                                <div class="text-slate-400 text-xs mt-1.5">Formato: 000.000.000-00</div>
+                                @error('cpf')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-            <div class="mb-5">
-                <label for="password_confirmation" class="block mb-2 text-gray-700 font-bold">
-                    Confirmar Senha <span class="text-red-600">*</span>
-                </label>
-                <input type="password" id="password_confirmation" name="password_confirmation"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-            </div>
+                            <div>
+                                <label for="birthDate" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Data de Nascimento <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="date" id="birthDate" name="birthDate" value="{{ old('birthDate') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    required>
+                                @error('birthDate')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-            <div class="mb-5">
-                <label for="socialMedia" class="block mb-2 text-gray-700 font-bold">Redes Sociais</label>
-                <input type="text" id="socialMedia" name="socialMedia" value="{{ old('socialMedia') }}"
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    placeholder="@usuario">
-                @error('socialMedia')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                            <div class="lg:col-span-2">
+                                <label for="email" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Email <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="email" id="email" name="email" value="{{ old('email') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    required>
+                                @error('email')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-            <div class="border-t-2 border-gray-200 pt-6 mt-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Dados de Vendedor</h2>
+                            <div>
+                                <label for="password" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Senha <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="password" id="password" name="password"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    required>
+                                <div class="text-slate-400 text-xs mt-1.5">Mínimo de 8 caracteres</div>
+                                @error('password')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                <div class="mb-5">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="is_seller" name="is_seller" value="1"
-                            {{ old('is_seller') ? 'checked' : '' }}
-                            class="w-5 h-5 text-[#B2675E] border-gray-300 rounded focus:ring-[#B2675E]">
-                        <span class="ml-2 text-gray-700 font-bold">Sou um vendedor</span>
-                    </label>
-                </div>
+                            <div>
+                                <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Confirmar Senha <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="password" id="password_confirmation" name="password_confirmation"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    required>
+                            </div>
 
-                <div id="seller_fields" style="display: {{ old('is_seller') ? 'block' : 'none' }};">
-                    <div class="mb-5">
-                        <label for="store_name" class="block mb-2 text-gray-700 font-bold">
-                            Nome da Loja <span class="text-red-600">*</span>
-                        </label>
-                        <input type="text" id="store_name" name="store_name" value="{{ old('store_name') }}"
-                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                            placeholder="Digite um nome único para sua loja">
-                        <div class="text-gray-600 text-xs mt-1">Evite nomes genéricos como "Loja de Receitas" ou "Receitas de Amigurumi"</div>
-                        @error('store_name')
-                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                        @enderror
+                            <div class="lg:col-span-2">
+                                <label for="socialMedia" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Redes Sociais
+                                </label>
+                                <input type="text" id="socialMedia" name="socialMedia" value="{{ old('socialMedia') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    placeholder="@usuario">
+                                @error('socialMedia')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-5">
-                        <label for="cnpj" class="block mb-2 text-gray-700 font-bold">CNPJ</label>
-                        <input type="text" id="cnpj" name="cnpj" value="{{ old('cnpj') }}"
-                            class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                            placeholder="00.000.000/0000-00" maxlength="18">
-                        <div class="text-gray-600 text-xs mt-1">Formato: 00.000.000/0000-00 (opcional)</div>
-                        @error('cnpj')
-                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                        @enderror
+                    <!-- Dados de Vendedor -->
+                    <div class="pt-10 border-t border-slate-100">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-6">
+                            Dados de Vendedor
+                        </h2>
+
+                        <div class="mb-6">
+                            <label class="flex items-center cursor-pointer group">
+                                <div class="relative">
+                                    <input type="checkbox" id="is_seller" name="is_seller" value="1"
+                                        {{ old('is_seller') ? 'checked' : '' }}
+                                        class="w-5 h-5 text-[var(--terracotta)] border-slate-300 rounded focus:ring-2 focus:ring-[var(--terracotta)]/20 transition-all">
+                                </div>
+                                <span class="ml-3 text-sm font-medium text-slate-600 group-hover:text-[var(--coffee)] transition-colors">
+                                    Quero vender minhas receitas na plataforma
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="seller_fields" style="display: {{ old('is_seller') ? 'block' : 'none' }};" class="space-y-6">
+                            <div>
+                                <label for="store_name" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    Nome da Loja <span class="text-[var(--terracotta)]">*</span>
+                                </label>
+                                <input type="text" id="store_name" name="store_name" value="{{ old('store_name') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    placeholder="Digite um nome único para sua loja">
+                                <div class="text-slate-400 text-xs mt-1.5">Evite nomes genéricos como "Loja de Receitas" ou "Receitas de Amigurumi"</div>
+                                @error('store_name')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="cnpj" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                                    CNPJ
+                                </label>
+                                <input type="text" id="cnpj" name="cnpj" value="{{ old('cnpj') }}"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                                    placeholder="00.000.000/0000-00" maxlength="18">
+                                <div class="text-slate-400 text-xs mt-1.5">Formato: 00.000.000/0000-00 (opcional)</div>
+                                @error('cnpj')
+                                    <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Botões -->
+                    <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-8 border-t border-slate-100">
+                        <a href="{{ route('users.show') }}"
+                            class="flex-1 text-center py-3.5 px-6 bg-white border-2 border-slate-200 text-[var(--coffee)] rounded-xl font-semibold hover:border-[var(--coffee)] hover:bg-slate-50 transition-all">
+                            Cancelar
+                        </a>
+                        <button type="submit"
+                            class="flex-1 py-3.5 px-6 bg-gradient-to-r from-[var(--terracotta)] to-[var(--coffee)] text-white rounded-xl font-semibold btn-primary shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]">
+                            Criar Conta
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <div class="flex gap-3 mt-8">
-                <a href="{{ route('users.show') }}"
-                    class="flex-1 text-center py-3 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition-colors">
-                    Cancelar
-                </a>
-                <button type="submit"
-                    class="flex-1 py-3 bg-[#B2675E] text-white rounded-lg font-bold hover:bg-[#644536] transition-colors">
-                    Cadastrar
-                </button>
+            <div class="mt-8 text-center">
+                <p class="text-slate-500 text-sm">
+                    Já tem uma conta?
+                    <a href="{{ route('login') }}" class="text-[var(--terracotta)] hover:text-[var(--coffee)] font-semibold transition-colors">
+                        Faça login aqui
+                    </a>
+                </p>
             </div>
-        </form>
-    </div>
+        </div>
+    </main>
+
+    <x-footer />
 
     <script>
         // Máscara para CPF
@@ -239,6 +267,6 @@
             }
         });
     </script>
-    </div>
 </body>
+
 </html>

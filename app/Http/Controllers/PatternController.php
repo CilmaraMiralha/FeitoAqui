@@ -9,18 +9,63 @@ use Illuminate\Support\Facades\Storage;
 
 class PatternController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $patterns = Auth::user()->patterns()->latest()->get();
+        $query = Auth::user()->patterns();
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $patterns = $query->latest()->get();
         return view('patterns.index', compact('patterns'));
+    }
+
+    public function search(Request $request)
+    {
+        $query = Pattern::where('status', 'active')->with(['user', 'reviews']);
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereJsonContains('tags', $search);
+            });
+        }
+
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        if ($request->has('seller')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('store_name', 'like', "%{$request->seller}%");
+            });
+        }
+
+        $patterns = $query->latest()->paginate(20);
+        return view('patterns.search', compact('patterns'));
     }
 
     public function create()
     {
-        // Apenas vendedores podem criar patterns
+        // Apenas vendedores podem criar receitas
         if (!Auth::user()->is_seller) {
             return redirect()->route('users.edit', Auth::user())
-                ->with('error', 'Você precisa ser um vendedor para criar patterns. Configure sua conta como vendedor primeiro.');
+                ->with('error', 'Você precisa ser um vendedor para criar receitas. Configure sua conta como vendedor primeiro.');
         }
 
         return view('patterns.create');
@@ -29,7 +74,7 @@ class PatternController extends Controller
     public function store(Request $request)
     {
         if (!Auth::user()->is_seller) {
-            abort(403, 'Apenas vendedores podem criar patterns.');
+            abort(403, 'Apenas vendedores podem criar receitas.');
         }
 
         $validated = $request->validate([
@@ -70,7 +115,7 @@ class PatternController extends Controller
         Pattern::create($validated);
 
         return redirect()->route('patterns.index')
-            ->with('success', 'Pattern criado com sucesso! Aguardando aprovação do administrador.');
+            ->with('success', 'Receita criada com sucesso! Aguardando aprovação do administrador.');
     }
 
     public function show(Pattern $pattern)
@@ -81,7 +126,7 @@ class PatternController extends Controller
     public function edit(Pattern $pattern)
     {
         if ($pattern->user_id !== Auth::id()) {
-            abort(403, 'Você não tem permissão para editar este pattern.');
+            abort(403, 'Você não tem permissão para editar esta receita.');
         }
 
         return view('patterns.edit', compact('pattern'));
@@ -90,7 +135,7 @@ class PatternController extends Controller
     public function update(Request $request, Pattern $pattern)
     {
         if ($pattern->user_id !== Auth::id()) {
-            abort(403, 'Você não tem permissão para editar este pattern.');
+            abort(403, 'Você não tem permissão para editar esta receita.');
         }
 
         $validated = $request->validate([
@@ -158,13 +203,13 @@ class PatternController extends Controller
         $pattern->update($validated);
 
         return redirect()->route('patterns.show', $pattern)
-            ->with('success', 'Pattern atualizado com sucesso!');
+            ->with('success', 'Receita atualizada com sucesso!');
     }
 
     public function destroy(Pattern $pattern)
     {
         if ($pattern->user_id !== Auth::id()) {
-            abort(403, 'Você não tem permissão para excluir este pattern.');
+            abort(403, 'Você não tem permissão para excluir esta receita.');
         }
 
         // Remover fotos
@@ -182,6 +227,6 @@ class PatternController extends Controller
         $pattern->delete();
 
         return redirect()->route('patterns.index')
-            ->with('success', 'Pattern excluído com sucesso!');
+            ->with('success', 'Receita excluída com sucesso!');
     }
 }

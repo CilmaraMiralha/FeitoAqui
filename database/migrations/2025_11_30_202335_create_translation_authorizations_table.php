@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('translation_authorizations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('original_pattern_id')->constrained('patterns')->onDelete('cascade');
+            $table->foreignId('translator_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

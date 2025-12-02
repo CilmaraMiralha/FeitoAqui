@@ -28,6 +28,7 @@ class User extends Authenticatable
         'photo',
         'is_admin',
         'is_seller',
+        'is_banned',
         'store_name',
         'cnpj',
     ];
@@ -54,6 +55,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_seller' => 'boolean',
+            'is_banned' => 'boolean',
         ];
     }
 
@@ -70,5 +72,20 @@ class User extends Authenticatable
     public function patterns()
     {
         return $this->hasMany(Pattern::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

@@ -1,90 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Senha</title>
+    <title>Recuperar Senha - FeitoAqui</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     @vite('resources/css/app.css')
+
+    <style>
+        :root {
+            --coffee: #644536;
+            --terracotta: #B2675E;
+            --ivory: #F2F5EA;
+            --dust: #D6DBD2;
+            --olive: #6F7C12;
+        }
+
+        body {
+            background-color: #FAFAF5;
+            color: var(--coffee);
+            line-height: 1.7;
+        }
+
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(178, 103, 94, 0.3);
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-[#B2675E] to-[#644536] min-h-screen">
-    @auth
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-4">
-            @if(Auth::user()->photo)
-                <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover">
-            @else
-                <div class="w-10 h-10 rounded-full bg-[#B2675E] flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+
+<body class="min-h-screen flex flex-col text-slate-600 antialiased">
+    <x-header />
+
+    <main class="flex-grow flex items-center justify-center py-12 px-6 sm:px-8 lg:px-12">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl lg:text-4xl font-serif font-bold text-[var(--coffee)] mb-3">Recuperar Senha</h1>
+                <p class="text-slate-500 font-light leading-relaxed">Informe seu email para receber o link de recuperação</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-slate-100 p-8">
+                @if(session('success'))
+                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 text-sm">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                <form action="{{ route('password.email') }}" method="POST">
+                    @csrf
+
+                    <div class="mb-6">
+                        <label for="email" class="block text-xs font-bold uppercase tracking-wider text-[var(--coffee)] mb-2">
+                            Email
+                        </label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}"
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--terracotta)]/20 focus:border-[var(--terracotta)] transition-all"
+                            required autofocus>
+                        @error('email')
+                            <div class="text-[var(--terracotta)] text-sm mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-3.5 px-6 bg-gradient-to-r from-[var(--terracotta)] to-[var(--coffee)] text-white rounded-xl font-semibold btn-primary shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)]">
+                        Enviar Link de Recuperação
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                    <a href="{{ route('login') }}"
+                        class="text-sm text-[var(--terracotta)] hover:text-[var(--coffee)] font-semibold transition-colors inline-flex items-center group">
+                        <svg class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Voltar para o login
+                    </a>
                 </div>
-            @endif
-            <span class="font-semibold">Olá, {{ Auth::user()->name }}</span>
-        </div>
-        <div class="flex gap-4">
-            @if(Auth::user()->is_admin)
-                <a href="{{ route('users.show') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                    Lista de Usuários
-                </a>
-            @endif
-            <a href="{{ route('users.edit', Auth::user()) }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meu Perfil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-red-700 rounded hover:bg-red-800 transition-colors">
-                    Sair
-                </button>
-            </form>
-        </div>
-    </div>
-    @else
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <span class="font-bold text-lg">Sistema de Usuários</span>
-        <div class="flex gap-4">
-            <a href="{{ route('login') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Login
-            </a>
-            <a href="{{ route('users.create') }}" class="px-4 py-2 bg-[#B2675E] rounded hover:bg-[#9a5850] transition-colors">
-                Criar Conta
-            </a>
-        </div>
-    </div>
-    @endauth
-
-    <div class="flex items-center justify-center p-5 min-h-[calc(100vh-64px)]">
-        <div class="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md">
-        <h1 class="text-3xl font-bold text-gray-800 mb-3 text-center">Recuperar Senha</h1>
-        <p class="text-center text-gray-600 mb-8 text-sm">Informe seu email para receber o link de recuperação</p>
-
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-5">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <form action="{{ route('password.email') }}" method="POST">
-            @csrf
-
-            <div class="mb-5">
-                <label for="email" class="block mb-2 text-gray-700 font-bold">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}"
-                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required autofocus>
-                @error('email')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
             </div>
 
-            <button type="submit" class="w-full py-3 bg-[#B2675E] text-white rounded-lg font-bold hover:bg-[#644536] transition-colors">
-                Enviar Link de Recuperação
-            </button>
-        </form>
-
-        <div class="mt-5 text-center">
-            <a href="{{ route('login') }}" class="text-[#6F7C12] hover:underline text-sm">
-                Voltar para o login
-            </a>
+            <div class="mt-8 text-center">
+                <p class="text-slate-500 text-sm">
+                    Não tem uma conta?
+                    <a href="{{ route('users.create') }}" class="text-[var(--terracotta)] hover:text-[var(--coffee)] font-semibold transition-colors">
+                        Cadastre-se
+                    </a>
+                </p>
+            </div>
         </div>
-    </div>
-    </div>
+    </main>
+
+    <x-footer />
 </body>
+
 </html>

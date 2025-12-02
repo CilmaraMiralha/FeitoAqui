@@ -3,305 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $material->name }} - Detalhes</title>
-    @vite('resources/css/app.css')
-</head>
-<body class="bg-[#F2F5EA] min-h-screen">
-    @auth
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-4">
-            @if(Auth::user()->photo)
-                <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover">
-            @else
-                <div class="w-10 h-10 rounded-full bg-[#B2675E] flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
-            @endif
-            <span class="font-semibold">Olá, {{ Auth::user()->name }}</span>
-        </div>
-        <div class="flex gap-4">
-            @if(Auth::user()->is_admin)
-                <a href="{{ route('users.show') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                    Lista de Usuários
-                </a>
-            @endif
-            <a href="{{ route('materials.index') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meus Materiais
-            </a>
-            <a href="{{ route('drafts.index') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meus Rascunhos
-            </a>
-            <a href="{{ route('users.edit', Auth::user()) }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meu Perfil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-red-700 rounded hover:bg-red-800 transition-colors">
-                    Sair
-                </button>
-            </form>
-        </div>
-    </div>
-    @endauth
+    <title>{{ $material->name }} - Detalhes - FeitoAqui</title>
 
-    <div class="p-5">
-        <div class="max-w-6xl mx-auto">
-            <!-- Informações do Material -->
-            <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
-                <div class="flex justify-between items-start mb-6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    @vite('resources/css/app.css')
+
+    <style>
+        :root {
+            --coffee: #644536;
+            --terracotta: #B2675E;
+            --ivory: #F2F5EA;
+            --dust: #D6DBD2;
+            --olive: #6F7C12;
+        }
+
+        body {
+            background-color: #FAFAF5;
+            color: var(--coffee);
+            line-height: 1.7;
+        }
+
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(178, 103, 94, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col text-slate-600 antialiased">
+    <x-header />
+
+    <section class="py-20 flex-grow">
+        <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+            <div class="mb-8">
+                <a href="{{ route('materials.index') }}"
+                    class="inline-flex items-center text-sm text-[var(--terracotta)] hover:text-[var(--coffee)] transition-colors mb-4">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Voltar para Meus Materiais
+                </a>
+                <div class="flex items-end justify-between mb-6 pb-6 border-b border-slate-100">
                     <div>
-                        <a href="{{ route('materials.index') }}" class="text-[#B2675E] hover:underline mb-2 inline-block">
-                            ← Voltar para Meus Materiais
-                        </a>
-                        <h1 class="text-3xl font-bold text-gray-800">{{ $material->name }}</h1>
+                        <h1 class="text-3xl lg:text-4xl font-serif font-bold text-[var(--coffee)] mb-3">{{ $material->name }}</h1>
+                        <p class="text-slate-500 font-light leading-relaxed">Gerenciar detalhes e variações do material.</p>
                     </div>
-                    <div class="flex gap-2">
-                        <a href="{{ route('materials.edit', $material) }}" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors">
+                    <div class="flex gap-3">
+                        <a href="{{ route('materials.edit', $material) }}"
+                            class="btn-primary inline-flex items-center px-5 py-3 rounded-full bg-yellow-500 text-white font-bold text-sm uppercase tracking-widest hover:bg-yellow-600">
                             Editar Material
                         </a>
                         <form action="{{ route('materials.destroy', $material) }}" method="POST" class="inline" onsubmit="return confirm('Tem certeza que deseja excluir este material? Todas as variações também serão excluídas.')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                            <button type="submit"
+                                class="btn-primary inline-flex items-center px-5 py-3 rounded-full bg-red-600 text-white font-bold text-sm uppercase tracking-widest hover:bg-red-700">
                                 Excluir Material
                             </button>
                         </form>
                     </div>
                 </div>
+            </div>
 
-                @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-5">
-                        {{ session('success') }}
-                    </div>
-                @endif
+            @if(session('success'))
+                <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg mb-8">
+                    <p class="text-green-700 font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @if(session('error'))
+                <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-8">
+                    <p class="text-red-700 font-medium">{{ session('error') }}</p>
+                </div>
+            @endif
+
+            <!-- Material Information -->
+            <div class="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm mb-8">
+                <h2 class="text-xs font-bold text-[var(--coffee)] uppercase tracking-widest mb-6">Informações do Material</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @if($material->brand)
-                        <div class="bg-gray-50 p-4 rounded">
-                            <p class="text-gray-600 text-sm">Marca</p>
-                            <p class="text-gray-800 font-bold">{{ $material->brand }}</p>
+                        <div class="bg-[var(--ivory)] p-6 rounded-xl">
+                            <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-2">Marca</p>
+                            <p class="text-lg text-[var(--coffee)] font-bold">{{ $material->brand }}</p>
                         </div>
                     @endif
 
                     @if($material->composition)
-                        <div class="bg-gray-50 p-4 rounded">
-                            <p class="text-gray-600 text-sm">Composição</p>
-                            <p class="text-gray-800 font-bold">{{ $material->composition }}</p>
+                        <div class="bg-[var(--ivory)] p-6 rounded-xl">
+                            <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-2">Composição</p>
+                            <p class="text-lg text-[var(--coffee)] font-bold">{{ $material->composition }}</p>
                         </div>
                     @endif
 
                     @if($material->fixed_weight)
-                        <div class="bg-gray-50 p-4 rounded">
-                            <p class="text-gray-600 text-sm">Peso Fixo</p>
-                            <p class="text-gray-800 font-bold">{{ $material->fixed_weight }}g</p>
+                        <div class="bg-[var(--ivory)] p-6 rounded-xl">
+                            <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-2">Peso Fixo</p>
+                            <p class="text-lg text-[var(--coffee)] font-bold">{{ $material->fixed_weight }}g</p>
                         </div>
                     @endif
                 </div>
             </div>
 
-            <!-- Variações -->
-            <div class="bg-white p-8 rounded-lg shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Variações</h2>
-                    <button onclick="toggleAddVariationForm()" class="px-4 py-2 bg-[#B2675E] text-white rounded hover:bg-[#644536] transition-colors font-bold">
+            <!-- Variations Section -->
+            <div class="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm">
+                <div class="flex items-end justify-between mb-8 pb-6 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-[var(--coffee)] mb-2">Variações</h2>
+                        <p class="text-slate-500 font-light leading-relaxed">Cores e quantidades em estoque.</p>
+                    </div>
+                    <button onclick="toggleAddVariationForm()"
+                        class="btn-primary inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-[var(--terracotta)] to-[var(--coffee)] text-white font-bold text-sm uppercase tracking-widest">
                         + Nova Variação
                     </button>
                 </div>
 
-                @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-5">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
-                <!-- Painel de Controle Rápido de Peso -->
+                <!-- Quick Weight Adjustment Panel -->
                 @if($material->variations->count() > 0)
-                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 24px;">
-                        <h3 style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px;">Ajuste Rápido de Peso</h3>
+                    <div class="bg-[var(--ivory)] border border-slate-100 p-6 rounded-xl mb-8">
+                        <h3 class="text-xs font-bold text-[var(--coffee)] uppercase tracking-widest mb-4">Ajuste Rápido de Peso</h3>
                         <form action="{{ route('materials.variations.adjust', $material) }}" method="POST">
                             @csrf
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="padding-right: 10px; width: 40%;">
-                                        <select id="variation_id" name="variation_id" required onchange="updateCurrentWeight()" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
-                                            <option value="">Selecione a variação...</option>
-                                            @foreach($material->variations as $variation)
-                                                <option value="{{ $variation->id }}" data-weight="{{ $variation->weight }}">
-                                                    {{ $variation->color }}
-                                                    @if($variation->color_code)
-                                                        ({{ $variation->color_code }})
-                                                    @endif
-                                                    - {{ $variation->weight }}g
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td style="padding-right: 10px; width: 20%;">
-                                        <input type="number" id="weight_adjustment" name="weight_adjustment" step="0.01" min="0.01" placeholder="Peso (g)" required style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;">
-                                    </td>
-                                    <td style="padding-right: 5px; width: 20%;">
-                                        <button type="submit" name="action" value="add" style="width: 100%; padding: 8px 16px; background-color: #16a34a; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer;">
-                                            + Adicionar
-                                        </button>
-                                    </td>
-                                    <td style="width: 20%;">
-                                        <button type="submit" name="action" value="remove" style="width: 100%; padding: 8px 16px; background-color: #dc2626; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer;">
-                                            - Remover
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div id="current-weight-info" class="hidden" style="margin-top: 8px; font-size: 12px; color: #4b5563;">
-                                Peso atual: <span id="current-weight-value" style="font-weight: 600;">-</span>
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                <div class="md:col-span-5">
+                                    <select id="variation_id" name="variation_id" required onchange="updateCurrentWeight()"
+                                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors text-slate-700">
+                                        <option value="">Selecione a variação...</option>
+                                        @foreach($material->variations as $variation)
+                                            <option value="{{ $variation->id }}" data-weight="{{ $variation->weight }}">
+                                                {{ $variation->color }}
+                                                @if($variation->color_code)
+                                                    ({{ $variation->color_code }})
+                                                @endif
+                                                - {{ $variation->weight }}g
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="md:col-span-3">
+                                    <input type="number" id="weight_adjustment" name="weight_adjustment" step="0.01" min="0.01" placeholder="Peso (g)" required
+                                        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors text-slate-700">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <button type="submit" name="action" value="add"
+                                        class="w-full px-4 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-colors">
+                                        + Adicionar
+                                    </button>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <button type="submit" name="action" value="remove"
+                                        class="w-full px-4 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors">
+                                        - Remover
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="current-weight-info" class="hidden mt-3 text-sm text-slate-600">
+                                Peso atual: <span id="current-weight-value" class="font-bold text-[var(--coffee)]">-</span>
                             </div>
                         </form>
                     </div>
                 @endif
 
-                <!-- Formulário de Nova Variação (inicialmente oculto) -->
-                <div id="addVariationForm" class="hidden mb-6 bg-gray-50 p-6 rounded-lg border-2 border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Adicionar Nova Variação</h3>
+                <!-- Add Variation Form (hidden initially) -->
+                <div id="addVariationForm" class="hidden mb-8 bg-[var(--ivory)] border-2 border-slate-200 p-8 rounded-xl">
+                    <h3 class="text-lg font-bold text-[var(--coffee)] mb-6">Adicionar Nova Variação</h3>
                     <form action="{{ route('materials.variations.store', $material) }}" method="POST">
                         @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <label for="color" class="block mb-2 text-gray-700 font-bold">
+                                <label for="color" class="block mb-3 text-sm font-bold text-[var(--coffee)] uppercase tracking-widest">
                                     Cor <span class="text-red-600">*</span>
                                 </label>
                                 <input type="text" id="color" name="color" value="{{ old('color') }}"
-                                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E]"
+                                    class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors text-slate-700"
                                     placeholder="Ex: Azul marinho" required>
                             </div>
 
                             <div>
-                                <label for="color_code" class="block mb-2 text-gray-700 font-bold">Código da Cor</label>
+                                <label for="color_code" class="block mb-3 text-sm font-bold text-[var(--coffee)] uppercase tracking-widest">
+                                    Código da Cor
+                                </label>
                                 <input type="text" id="color_code" name="color_code" value="{{ old('color_code') }}"
-                                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E]"
+                                    class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors text-slate-700"
                                     placeholder="Ex: 1234, 5678">
-                                <div class="text-gray-600 text-xs mt-1">Código da embalagem</div>
+                                <div class="text-slate-500 text-xs mt-2">Código da embalagem</div>
                             </div>
 
                             <div>
-                                <label for="weight" class="block mb-2 text-gray-700 font-bold">
+                                <label for="weight" class="block mb-3 text-sm font-bold text-[var(--coffee)] uppercase tracking-widest">
                                     Peso (gramas) <span class="text-red-600">*</span>
                                 </label>
                                 <input type="number" id="weight" name="weight" value="{{ old('weight') }}"
                                     step="0.01" min="0"
-                                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E]"
+                                    class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors text-slate-700"
                                     placeholder="100" required>
                             </div>
                         </div>
 
-                        <div class="flex gap-3 mt-4">
-                            <button type="button" onclick="toggleAddVariationForm()" class="flex-1 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                        <div class="flex gap-4 mt-6">
+                            <button type="button" onclick="toggleAddVariationForm()"
+                                class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors">
                                 Cancelar
                             </button>
-                            <button type="submit" class="flex-1 py-2 bg-[#B2675E] text-white rounded-lg hover:bg-[#644536]">
+                            <button type="submit"
+                                class="btn-primary flex-1 py-3 bg-gradient-to-r from-[var(--terracotta)] to-[var(--coffee)] text-white rounded-xl font-bold">
                                 Adicionar Variação
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Lista de Variações -->
+                <!-- Warning if no fixed weight -->
                 @if(!$material->fixed_weight)
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-                        <p class="text-sm text-yellow-700">
-                            <strong>⚠️ Atenção:</strong> Cadastre o peso fixo do material para que o sistema possa calcular automaticamente o status de estoque das variações.
-                            <a href="{{ route('materials.edit', $material) }}" class="underline font-bold">Adicionar peso fixo</a>
-                        </p>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg mb-6">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-yellow-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <p class="text-sm text-yellow-700 leading-relaxed">
+                                <strong>Atenção:</strong> Cadastre o peso fixo do material para que o sistema possa calcular automaticamente o status de estoque das variações.
+                                <a href="{{ route('materials.edit', $material) }}" class="underline font-bold hover:text-yellow-900">Adicionar peso fixo</a>
+                            </p>
+                        </div>
                     </div>
                 @endif
 
+                <!-- Variations List -->
                 @if($material->variations->isEmpty())
-                    <div class="text-center py-12">
-                        <div class="text-gray-400 text-6xl mb-4">🎨</div>
-                        <p class="text-gray-600 text-lg">Nenhuma variação cadastrada ainda.</p>
+                    <div class="text-center py-16">
+                        <div class="w-20 h-20 bg-[var(--ivory)] rounded-full flex items-center justify-center mx-auto mb-6 text-[var(--coffee)]">
+                            <svg class="w-10 h-10 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold text-[var(--coffee)] mb-2">Nenhuma variação cadastrada</h3>
+                        <p class="text-slate-500">Clique em "Nova Variação" para adicionar cores e quantidades.</p>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto rounded-xl border border-slate-100">
                         <table class="w-full">
-                            <thead class="bg-gray-100">
+                            <thead class="bg-[var(--coffee)] text-white">
                                 <tr>
-                                    <th class="px-4 py-3 text-left">Cor</th>
-                                    <th class="px-4 py-3 text-left">Código</th>
-                                    <th class="px-4 py-3 text-left">Peso (g)</th>
-                                    <th class="px-4 py-3 text-left">Status</th>
-                                    <th class="px-4 py-3 text-right">Ações</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest">Cor</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest">Código</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest">Peso (g)</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest">Status</th>
+                                    <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-widest">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($material->variations as $variation)
-                                    <tr class="border-b hover:bg-gray-50" id="variation-{{ $variation->id }}">
-                                        <td class="px-4 py-3">
-                                            <span class="font-semibold">{{ $variation->color }}</span>
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors" id="variation-{{ $variation->id }}">
+                                        <td class="px-6 py-4">
+                                            <span class="font-bold text-[var(--coffee)]">{{ $variation->color }}</span>
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-6 py-4">
                                             @if($variation->color_code)
-                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">{{ $variation->color_code }}</span>
+                                                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-full font-medium border border-blue-200">
+                                                    {{ $variation->color_code }}
+                                                </span>
                                             @else
-                                                <span class="text-gray-400">-</span>
+                                                <span class="text-slate-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3">
+                                        <td class="px-6 py-4">
                                             <div>
-                                                <span class="font-bold">{{ $variation->weight }}g</span>
+                                                <span class="font-bold text-slate-700">{{ $variation->weight }}g</span>
                                                 @if($variation->percentage !== null)
-                                                    <span class="text-sm text-gray-500">
+                                                    <span class="text-sm text-slate-500 ml-1">
                                                         ({{ number_format($variation->percentage, 1) }}%)
                                                     </span>
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="px-4 py-3">
-                                            <span class="px-2 py-1 {{ $variation->status['bg'] }} {{ $variation->status['text'] }} text-xs rounded font-semibold">
+                                        <td class="px-6 py-4">
+                                            <span class="px-3 py-1 {{ $variation->status['bg'] }} {{ $variation->status['text'] }} text-xs rounded-full font-bold">
                                                 {{ $variation->status['label'] }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-right">
-                                            <button onclick="editVariation({{ $variation->id }}, '{{ $variation->color }}', '{{ $variation->color_code }}', '{{ $variation->weight }}')"
-                                                    class="text-yellow-600 hover:text-yellow-800 mr-2" title="Editar">
-                                                ✏️
-                                            </button>
-                                            <form action="{{ route('materials.variations.destroy', [$material, $variation]) }}" method="POST" class="inline" onsubmit="return confirm('Tem certeza que deseja excluir esta variação?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-800" title="Excluir">
-                                                    🗑️
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex gap-2 justify-end">
+                                                <button onclick="editVariation({{ $variation->id }}, '{{ $variation->color }}', '{{ $variation->color_code }}', '{{ $variation->weight }}')"
+                                                    class="w-8 h-8 rounded-full bg-slate-50 text-yellow-600 flex items-center justify-center hover:bg-yellow-50 transition-colors"
+                                                    title="Editar">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
                                                 </button>
-                                            </form>
+                                                <form action="{{ route('materials.variations.destroy', [$material, $variation]) }}" method="POST" class="inline" onsubmit="return confirm('Tem certeza que deseja excluir esta variação?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="w-8 h-8 rounded-full bg-slate-50 text-red-600 flex items-center justify-center hover:bg-red-50 transition-colors"
+                                                        title="Excluir">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
-                                    <!-- Formulário de Edição (oculto) -->
-                                    <tr id="edit-form-{{ $variation->id }}" class="hidden bg-gray-50">
-                                        <td colspan="5" class="px-4 py-4">
+                                    <!-- Edit Form (hidden) -->
+                                    <tr id="edit-form-{{ $variation->id }}" class="hidden bg-slate-50">
+                                        <td colspan="5" class="px-6 py-6">
                                             <form action="{{ route('materials.variations.update', [$material, $variation]) }}" method="POST">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                     <div>
-                                                        <label class="block mb-1 text-sm font-bold">Cor</label>
+                                                        <label class="block mb-2 text-sm font-bold text-[var(--coffee)] uppercase tracking-widest">Cor</label>
                                                         <input type="text" name="color" value="{{ $variation->color }}"
-                                                            class="w-full px-3 py-2 border-2 rounded-lg" required>
+                                                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors" required>
                                                     </div>
                                                     <div>
-                                                        <label class="block mb-1 text-sm font-bold">Código</label>
+                                                        <label class="block mb-2 text-sm font-bold text-[var(--coffee)] uppercase tracking-widest">Código</label>
                                                         <input type="text" name="color_code" value="{{ $variation->color_code }}"
-                                                            class="w-full px-3 py-2 border-2 rounded-lg"
+                                                            class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors"
                                                             placeholder="Ex: 1234">
                                                     </div>
                                                     <div>
-                                                        <label class="block mb-1 text-sm font-bold">Peso (g)</label>
+                                                        <label class="block mb-2 text-sm font-bold text-[var(--coffee)] uppercase tracking-widest">Peso (g)</label>
                                                         <input type="number" name="weight" value="{{ $variation->weight }}"
-                                                            step="0.01" min="0" class="w-full px-3 py-2 border-2 rounded-lg" required>
+                                                            step="0.01" min="0" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] transition-colors" required>
                                                     </div>
                                                 </div>
-                                                <div class="flex gap-3 mt-4">
+                                                <div class="flex gap-4 mt-6">
                                                     <button type="button" onclick="cancelEdit({{ $variation->id }})"
-                                                            class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+                                                        class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors">
                                                         Cancelar
                                                     </button>
-                                                    <button type="submit" class="px-4 py-2 bg-[#B2675E] text-white rounded hover:bg-[#644536]">
+                                                    <button type="submit"
+                                                        class="btn-primary px-6 py-3 bg-gradient-to-r from-[var(--terracotta)] to-[var(--coffee)] text-white rounded-xl font-bold">
                                                         Salvar Alterações
                                                     </button>
                                                 </div>
@@ -315,7 +358,9 @@
                 @endif
             </div>
         </div>
-    </div>
+    </section>
+
+    <x-footer />
 
     <script>
         function toggleAddVariationForm() {

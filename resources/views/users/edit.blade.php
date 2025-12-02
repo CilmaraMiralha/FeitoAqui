@@ -8,36 +8,7 @@
 </head>
 <body class="bg-[#F2F5EA] min-h-screen">
     <x-header />
-    @auth
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-4">
-            @if(Auth::user()->photo)
-                <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover">
-            @else
-                <div class="w-10 h-10 rounded-full bg-[#B2675E] flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
-            @endif
-            <span class="font-semibold">Olá, {{ Auth::user()->name }}</span>
-        </div>
-        <div class="flex gap-4">
-            @if(Auth::user()->is_admin)
-                <a href="{{ route('users.show') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                    Lista de Usuários
-                </a>
-            @endif
-            <a href="{{ route('users.edit', Auth::user()) }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meu Perfil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-red-700 rounded hover:bg-red-800 transition-colors">
-                    Sair
-                </button>
-            </form>
-        </div>
-    </div>
-    @endauth
+    
 
     <div class="p-5">
         <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">

@@ -77,4 +77,69 @@ class DraftController extends Controller
 
         return redirect()->route('drafts.index')->with('success', 'Rascunho excluído com sucesso!');
     }
+
+    public function publish(Draft $draft)
+    {
+        if ($draft->user_id !== Auth::id()) {
+            abort(403, 'Você não tem permissão para publicar este rascunho.');
+        }
+
+        if (!Auth::user()->is_seller) {
+            return redirect()->back()->with('error', 'Apenas vendedores podem publicar receitas.');
+        }
+
+        return view('drafts.publish', compact('draft'));
+    }
+
+    public function storePattern(Request $request, Draft $draft)
+    {
+        if ($draft->user_id !== Auth::id()) {
+            abort(403, 'Você não tem permissão para publicar este rascunho.');
+        }
+
+        if (!Auth::user()->is_seller) {
+            abort(403, 'Apenas vendedores podem publicar receitas.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'tags' => 'nullable|string',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'attachment' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+        $validated['status'] = 'pending';
+
+        // Processar tags
+        if (!empty($validated['tags'])) {
+            $tags = array_map('trim', explode(',', $validated['tags']));
+            $validated['tags'] = $tags;
+        } else {
+            $validated['tags'] = null;
+        }
+
+        // Upload de fotos
+        if ($request->hasFile('photos')) {
+            $photos = [];
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('patterns/photos', 'public');
+                $photos[] = $path;
+            }
+            $validated['photos'] = $photos;
+        }
+
+        // Upload do arquivo PDF
+        if ($request->hasFile('attachment')) {
+            $validated['attachment'] = $request->file('attachment')->store('patterns/pdfs', 'public');
+        }
+
+        \App\Models\Pattern::create($validated);
+        $draft->delete();
+
+        return redirect()->route('patterns.index')
+            ->with('success', 'Receita criada com sucesso! Aguardando aprovação do administrador.');
+    }
 }

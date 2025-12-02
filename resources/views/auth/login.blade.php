@@ -3,106 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Entrar - FeitoAqui</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     @vite('resources/css/app.css')
 </head>
-<body class="bg-gradient-to-br from-[#B2675E] to-[#644536] min-h-screen">
-    @auth
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-4">
-            @if(Auth::user()->photo)
-                <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover">
-            @else
-                <div class="w-10 h-10 rounded-full bg-[#B2675E] flex items-center justify-center text-white font-bold">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+
+<body class="min-h-screen flex flex-col bg-[#FAFAF5] antialiased">
+    <x-header />
+
+    <main class="flex-grow flex items-center justify-center px-6 py-16">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-serif font-bold text-[var(--coffee)] mb-3">Bem-vindo de volta!</h1>
+                <p class="text-slate-500 font-light">Entre na sua conta para continuar</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-slate-100 p-10">
+                @if(session('success'))
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 text-sm">
+                    {{ session('success') }}
                 </div>
-            @endif
-            <span class="font-semibold">Olá, {{ Auth::user()->name }}</span>
-        </div>
-        <div class="flex gap-4">
-            @if(Auth::user()->is_admin)
-                <a href="{{ route('users.show') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                    Lista de Usuários
-                </a>
-            @endif
-            <a href="{{ route('users.edit', Auth::user()) }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meu Perfil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-red-700 rounded hover:bg-red-800 transition-colors">
-                    Sair
-                </button>
-            </form>
-        </div>
-    </div>
-    @else
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <span class="font-bold text-lg">Sistema de Usuários</span>
-        <div class="flex gap-4">
-            <a href="{{ route('login') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Login
-            </a>
-            <a href="{{ route('users.create') }}" class="px-4 py-2 bg-[#B2675E] rounded hover:bg-[#9a5850] transition-colors">
-                Criar Conta
-            </a>
-        </div>
-    </div>
-    @endauth
+                @endif
 
-    <div class="flex items-center justify-center p-5 min-h-[calc(100vh-64px)]">
-        <div class="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md">
-        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Login</h1>
+                @if(session('error'))
+                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl mb-6 text-sm">
+                    {{ session('error') }}
+                </div>
+                @endif
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-5">
-                {{ session('success') }}
+                <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
+                    @csrf
+
+                    <div>
+                        <label for="email" class="block text-xs font-bold text-[var(--coffee)] uppercase tracking-wider mb-3">Email</label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}"
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] focus:ring-2 focus:ring-[var(--terracotta)]/20 transition-all"
+                            placeholder="seu@email.com"
+                            required autofocus>
+                        @error('email')
+                        <p class="text-red-600 text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-xs font-bold text-[var(--coffee)] uppercase tracking-wider mb-3">Senha</label>
+                        <input type="password" id="password" name="password"
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[var(--terracotta)] focus:ring-2 focus:ring-[var(--terracotta)]/20 transition-all"
+                            placeholder="••••••••"
+                            required>
+                        @error('password')
+                        <p class="text-red-600 text-xs mt-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center cursor-pointer group">
+                            <input type="checkbox" id="remember" name="remember"
+                                class="w-4 h-4 rounded border-slate-300 text-[var(--terracotta)] focus:ring-[var(--terracotta)]/20">
+                            <span class="ml-2 text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Lembrar-me</span>
+                        </label>
+
+                        <a href="{{ route('password.request') }}"
+                           class="text-sm text-[var(--terracotta)] hover:text-[var(--coffee)] transition-colors font-medium">
+                            Esqueceu a senha?
+                        </a>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full py-4 bg-gradient-to-r from-[var(--terracotta)] to-[var(--coffee)] text-white rounded-xl font-bold uppercase tracking-wider text-sm hover:shadow-lg transform hover:-translate-y-0.5 transition-all">
+                        Entrar na conta
+                    </button>
+                </form>
+
+                <div class="mt-8 pt-8 border-t border-slate-100 text-center">
+                    <p class="text-sm text-slate-600 mb-4">Ainda não tem uma conta?</p>
+                    <a href="{{ route('users.create') }}"
+                       class="inline-flex items-center justify-center px-6 py-3 bg-[var(--olive)] text-white rounded-xl font-bold text-sm hover:bg-[#5a6510] transition-all">
+                        Criar conta grátis
+                    </a>
+                </div>
             </div>
-        @endif
-
-        <form action="{{ route('login.post') }}" method="POST">
-            @csrf
-
-            <div class="mb-5">
-                <label for="email" class="block mb-2 text-gray-700 font-bold">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}"
-                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required autofocus>
-                @error('email')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="mb-5">
-                <label for="password" class="block mb-2 text-gray-700 font-bold">Senha</label>
-                <input type="password" id="password" name="password"
-                    class="w-full px-3 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                    required>
-                @error('password')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="flex items-center mb-5">
-                <input type="checkbox" id="remember" name="remember" class="mr-2 w-4 h-4 accent-[#B2675E]">
-                <label for="remember" class="text-gray-700">Lembrar-me</label>
-            </div>
-
-            <button type="submit" class="w-full py-3 bg-[#B2675E] text-white rounded-lg font-bold hover:bg-[#644536] transition-colors">
-                Entrar
-            </button>
-        </form>
-
-        <div class="mt-5 text-center">
-            <a href="{{ route('password.request') }}" class="text-[#6F7C12] hover:underline text-sm">
-                Esqueci minha senha
-            </a>
-            <div class="my-4 text-gray-500">ou</div>
-            <a href="{{ route('users.create') }}" class="text-[#6F7C12] hover:underline text-sm">
-                Criar uma conta
-            </a>
         </div>
-    </div>
-    </div>
+    </main>
+
+    <x-footer />
 </body>
 </html>

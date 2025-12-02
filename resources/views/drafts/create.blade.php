@@ -4,90 +4,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novo Rascunho</title>
+    <title>Novo Rascunho - FeitoAqui</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     @vite('resources/css/app.css')
+
+    <style>
+        :root {
+            --coffee: #644536;
+            --terracotta: #B2675E;
+            --ivory: #F2F5EA;
+            --dust: #D6DBD2;
+            --olive: #6F7C12;
+        }
+
+        body {
+            background-color: #FAFAF5;
+            color: var(--coffee);
+            line-height: 1.7;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--coffee) 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(178, 103, 94, 0.3);
+        }
+
+        .form-input {
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--terracotta);
+            box-shadow: 0 0 0 3px rgba(178, 103, 94, 0.1);
+            outline: none;
+        }
+    </style>
 </head>
 
-<body class="bg-[#F2F5EA] min-h-screen">
-    @auth
-    <div class="bg-[#644536] text-white px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="flex items-center gap-4">
-            @if(Auth::user()->photo)
-            <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover">
-            @else
-            <div class="w-10 h-10 rounded-full bg-[#B2675E] flex items-center justify-center text-white font-bold">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+<body class="min-h-screen flex flex-col antialiased">
+    <x-header />
+
+    <main class="flex-grow py-12 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-6">
+                <a href="{{ route('drafts.index') }}" class="inline-flex items-center text-sm font-semibold text-[var(--coffee)] hover:text-[var(--terracotta)] transition-colors group">
+                    <svg class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Voltar para Meus Rascunhos
+                </a>
             </div>
-            @endif
-            <span class="font-semibold">Olá, {{ Auth::user()->name }}</span>
-        </div>
-        <div class="flex gap-4">
-            @if(Auth::user()->is_admin)
-            <a href="{{ route('users.show') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Lista de Usuários
-            </a>
-            @endif
-            <a href="{{ route('materials.index') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meus Materiais
-            </a>
-            <a href="{{ route('drafts.index') }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meus Rascunhos
-            </a>
-            <a href="{{ route('users.edit', Auth::user()) }}" class="px-4 py-2 bg-[#6F7C12] rounded hover:bg-[#5a6510] transition-colors">
-                Meu Perfil
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-red-700 rounded hover:bg-red-800 transition-colors">
-                    Sair
-                </button>
-            </form>
-        </div>
-    </div>
-    @endauth
 
-    <div class="p-5">
-        <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">Criar Novo Rascunho</h1>
-
-            <form action="{{ route('drafts.store') }}" method="POST">
-                @csrf
-
-                <div class="mb-5">
-                    <label for="title" class="block mb-2 text-gray-700 font-bold">
-                        Título <span class="text-red-600">*</span>
-                    </label>
-                    <input type="text" id="title" name="title" value="{{ old('title') }}"
-                        class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors"
-                        placeholder="Ex: Amigurumi de Unicórnio, Manta de Bebê..." required>
-                    @error('title')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                    @enderror
+            <div class="bg-white rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-slate-100 p-8 lg:p-12">
+                <div class="mb-8 pb-6 border-b border-slate-100">
+                    <h1 class="text-3xl lg:text-4xl font-serif font-bold text-[var(--coffee)] mb-2">Criar Novo Rascunho</h1>
+                    <p class="text-slate-500 font-light leading-relaxed">Comece a desenvolver sua nova receita de artesanato.</p>
                 </div>
 
-                <div class="mb-5">
-                    <label for="content" class="block mb-2 text-gray-700 font-bold">Conteúdo</label>
-                    <textarea id="content" name="content" rows="15"
-                        class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#B2675E] transition-colors font-mono text-sm"
-                        placeholder="Escreva aqui o conteúdo do seu pattern...&#10;&#10;Materiais:&#10;- Linha X&#10;- Agulha Y&#10;&#10;Instruções:&#10;1. Fazer anel mágico...&#10;2. ...">{{ old('content') }}</textarea>
-                    @error('content')
-                    <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+                <form action="{{ route('drafts.store') }}" method="POST">
+                    @csrf
 
-                <div class="flex gap-3 mt-8">
-                    <a href="{{ route('drafts.index') }}"
-                        class="flex-1 text-center py-3 bg-gray-600 text-white rounded-lg font-bold hover:bg-gray-700 transition-colors">
-                        Cancelar
-                    </a>
-                    <button type="submit"
-                        class="flex-1 py-3 bg-[#B2675E] text-white rounded-lg font-bold hover:bg-[#644536] transition-colors">
-                        Salvar Rascunho
-                    </button>
-                </div>
-            </form>
+                    <div class="mb-6">
+                        <label for="title" class="block mb-2 text-sm font-bold text-[var(--coffee)] uppercase tracking-wide">
+                            Título <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="title" name="title" value="{{ old('title') }}"
+                            class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-white text-[var(--coffee)]"
+                            placeholder="Ex: Amigurumi de Unicórnio, Manta de Bebê..." required>
+                        @error('title')
+                        <div class="text-red-600 text-sm mt-2 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-8">
+                        <label for="content" class="block mb-2 text-sm font-bold text-[var(--coffee)] uppercase tracking-wide">
+                            Conteúdo
+                        </label>
+                        <textarea id="content" name="content" rows="18"
+                            class="form-input w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-white text-[var(--coffee)] font-mono text-sm"
+                            placeholder="Escreva aqui o conteúdo da sua receita...&#10;&#10;Materiais:&#10;- Linha X&#10;- Agulha Y&#10;&#10;Instruções:&#10;1. Fazer anel mágico...&#10;2. ...">{{ old('content') }}</textarea>
+                        @error('content')
+                        <div class="text-red-600 text-sm mt-2 flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        <p class="text-xs text-slate-400 mt-2 flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Você pode editar e completar este rascunho a qualquer momento antes de publicar.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-100">
+                        <a href="{{ route('drafts.index') }}"
+                            class="flex-1 text-center py-3.5 px-6 bg-slate-100 text-slate-700 rounded-full font-semibold hover:bg-slate-200 transition-colors">
+                            Cancelar
+                        </a>
+                        <button type="submit"
+                            class="btn-primary flex-1 py-3.5 px-6 text-white rounded-full font-semibold shadow-lg">
+                            Salvar Rascunho
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
+
+    <x-footer />
 </body>
 
 </html>
