@@ -26,8 +26,9 @@
             <div class="grid grid-cols-1 gap-3 rounded-xl border border-[#DA98E0] bg-[#DA98E0]/15 p-4 text-[#4D2D52] md:grid-cols-2">
                 <p><span class="font-semibold">E-mail:</span> {{ $user->email }}</p>
                 <p><span class="font-semibold">CPF:</span> {{ $user->cpf }}</p>
-                <p><span class="font-semibold">Data de nascimento:</span> {{ $user->birth_date }}</p>
+                <p><span class="font-semibold">Data de nascimento:</span> {{ $user->birth_date ? \Illuminate\Support\Carbon::parse($user->birth_date)->format('d/m/Y') : 'Não informado' }}</p>
                 <p><span class="font-semibold">Rede social:</span> {{ $user->social_media ?? 'Não informado' }}</p>
+                <p><span class="font-semibold">Criado em:</span> {{ $user->created_at?->format('d/m/Y H:i') ?? 'Não informado' }}</p>
             </div>
 
             <div class="mt-6 flex flex-wrap gap-3">
